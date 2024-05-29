@@ -17,10 +17,10 @@ import (
 
 func main() {
 	// Connect to the gRPC server
-	serverAddress := os.Getenv("SERVER_ADDRESS")
-	address := fmt.Sprintf("%s:8888", serverAddress)
+	//serverAddress := os.Getenv("SERVER_ADDRESS")
+	//address := fmt.Sprintf("%s:8888", serverAddress)
 
-	conn, err := grpc.NewClient(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient("grpc-redis-server:8888", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
