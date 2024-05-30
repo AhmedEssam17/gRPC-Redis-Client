@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -40,13 +41,17 @@ func main() {
 		}
 
 		input = strings.TrimSpace(input)
-		args := strings.Split(input, " ")
+		args := parseInput(input)
+		if len(args) == 0 {
+			continue
+		}
+
 		command := args[0]
 
 		switch command {
 		case "add":
 			if len(args) != 3 {
-				fmt.Println("Usage: add <title> <description>")
+				fmt.Println("Usage: add \"<title>\" \"<description>\"")
 				continue
 			}
 			title := args[1]
@@ -61,7 +66,7 @@ func main() {
 			getTodo(client, id)
 		case "update":
 			if len(args) != 4 {
-				fmt.Println("Usage: update <id> <title> <description>")
+				fmt.Println("Usage: update <id> \"<title>\" \"<description>\"")
 				continue
 			}
 			id := args[1]
@@ -82,6 +87,16 @@ func main() {
 			fmt.Println("Available commands: add, get, update, delete, list")
 		}
 	}
+}
+
+func parseInput(input string) []string {
+	re := regexp.MustCompile(`"[^"]*"|\S+`)
+	matches := re.FindAllString(input, -1)
+	for i, match := range matches {
+		// Trim the double quotes from the arguments
+		matches[i] = strings.Trim(match, `"`)
+	}
+	return matches
 }
 
 func addTodo(client todo.TodoServiceClient, title, description string) {
