@@ -12,6 +12,7 @@ import (
 
 	"grpc-redis-client/protos/todo/protos/todo"
 
+	"github.com/go-redis/redis/v8"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -30,6 +31,20 @@ func main() {
 	client := todo.NewTodoServiceClient(conn)
 
 	fmt.Println("Connecting Client on Port 8888...")
+
+	// Connect to Redis
+	redisAddr := "redis:6379"
+	rdb := redis.NewClient(&redis.Options{
+		Addr: redisAddr,
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err = rdb.Ping(ctx).Result()
+	if err != nil {
+		log.Fatalf("Could not connect to Redis: %v", err)
+	}
 
 	reader := bufio.NewReader(os.Stdin)
 	for {
